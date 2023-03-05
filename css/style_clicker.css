@@ -1,0 +1,93 @@
+.main {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.stats {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgb(149, 201, 214);
+    width: 350px;
+    height: 70px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.stats p {
+
+}
+
+.timer {
+    width: 130px;
+    height: 30px;
+    background-color:rgb(231, 151, 171)
+}
+
+.central {
+    border: 1px solid #000;
+    border-radius: 50%;
+    transition: 1s;
+}
+
+.corner {
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    background: #21ada4;
+    animation: expansionSquare 1s linear forwards;
+}
+
+@keyframes expansionSquare {
+    0% {
+        width: 0;
+        height: 0;
+    }
+    100% {
+    width: 30px;
+    height: 30px;
+    }
+}
+
+.gameover {
+    display: none;
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    position: absolute;
+    top: 0;
+    left: 0;
+    animation: rise 1.5s;
+}
+@keyframes rise {
+    0% {opacity: 0;}
+    100% {opacity: 1;}
+    }
+.gameover p {
+    color: white;
+    font-size: 50px;
+    text-transform: uppercase;
+}
+
+.moveToCenter {
+    animation: moveToCenter 2.5s ease-in;
+}
+@keyframes moveToCenter {
+    100% {
+          top: 50%; 
+          bottom: 50%; 
+          left: 50%; 
+          right: 50%; 
+          width: 0; 
+          height: 0;
+        }
+}
