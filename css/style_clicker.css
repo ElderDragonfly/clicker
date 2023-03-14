@@ -1,3 +1,4 @@
+/* основные элементы */
 .main {
     width: 100vw;
     height: 100vh;
@@ -7,35 +8,18 @@
     position: relative;
 }
 
-.stats {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: rgb(149, 201, 214);
-    width: 350px;
-    height: 70px;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-}
-
-.stats p {
-
-}
-
-.timer {
-    width: 130px;
-    height: 30px;
-    background-color:rgb(231, 151, 171)
-}
-
 .central {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100px;
+    height: 100px;
     border: 1px solid #000;
     border-radius: 50%;
-    transition: 1s;
+    font-size: 30px;
 }
 
+/* движущиеся квадраты */
 .corner {
     width: 30px;
     height: 30px;
@@ -55,6 +39,72 @@
     }
 }
 
+.moveToCenter {
+    animation: moveToCenter 2.5s ease-in;
+}
+@keyframes moveToCenter {
+    100% {
+          top: 50%; 
+          bottom: 50%; 
+          left: 50%; 
+          right: 50%; 
+          width: 0; 
+          height: 0;
+        }
+}
+
+/* СТАТИСТИКА */
+.stats {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgb(149, 201, 214);
+    width: 350px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+}
+.stats_item {
+    flex-grow: 2;
+}
+
+.hide {
+    display: none;
+}
+.show {
+    display: block;
+}
+
+/* стрелки */
+.arrows img {
+    max-height: 70px;
+}
+
+/* таймер */
+.timer {
+    display: flex;
+    justify-content: center;
+}
+
+.ours, .minutes, .seconds {
+    margin-right: 10px;
+    padding: 3px;
+    background-color: #fff;
+    border: 1px solid #000;
+    border-radius: 4px;
+}
+
+/* счёт */
+.score {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* профиль */
+
+/* конец игры */
 .gameover {
     display: none;
     width: 100vw;
@@ -76,18 +126,4 @@
     color: white;
     font-size: 50px;
     text-transform: uppercase;
-}
-
-.moveToCenter {
-    animation: moveToCenter 2.5s ease-in;
-}
-@keyframes moveToCenter {
-    100% {
-          top: 50%; 
-          bottom: 50%; 
-          left: 50%; 
-          right: 50%; 
-          width: 0; 
-          height: 0;
-        }
 }
