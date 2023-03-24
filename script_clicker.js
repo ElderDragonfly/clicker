@@ -7,7 +7,8 @@ const centralFigue = document.querySelector('#central'),
       gameOver = document.querySelectorAll('.gameover'),
       main = document.querySelector('.main'),
       score = document.querySelector('.score');
-let newSquad = document.querySelector('.newSquad');
+let newSquad = document.querySelector('.newSquad'),
+    stats = document.querySelector('.stats');
 
 // рандомайзер
 function getRandomIntInclusive(min, max) {
@@ -28,6 +29,16 @@ let exceptCentralFigueWidthMax =  screenWidth / 2  + centralWidth / 2 + 15;
 let exceptCentralFigueHightMin =  screenHeight / 2  - centralHeight / 2 - 15;
 let exceptCentralFigueHightMax =  screenHeight / 2  + centralHeight / 2 + 15;
 
+// массив с координатами блока статистики
+let arrayStatsWidth = [];
+for (let i = stats.getBoundingClientRect().x - 15; i < stats.getBoundingClientRect().x + stats.getBoundingClientRect().width + 15; i++) {
+    arrayStatsWidth.push(Math.round(i));
+}
+let arrayStatsHeight = [];
+for (let i = stats.getBoundingClientRect().y - 15; i < stats.getBoundingClientRect().y + stats.getBoundingClientRect().height + 15; i++) {
+    arrayStatsHeight.push(Math.round(i));
+}
+
 // создание массива с числами-координатами центра
 let arrayCentralWidth = [];
 for (let i = exceptCentralFigueWidthMin; i < exceptCentralFigueWidthMax; i++ ) {
@@ -38,11 +49,12 @@ for (let i = exceptCentralFigueHightMin; i < exceptCentralFigueHightMax; i++ ) {
     arrayCentralHeight.push(Math.round(i));
 }
 
-// рандомайзер исключающий центр
+// рандомайзер исключающий центр и блок статистики
 let сoordinatsExeptCenter;
 function getRandomIntExeptCenter(arrW, arrH, width, Height) {
     let randomNumberW = getRandomIntInclusive(0, width - 30);
     let randomNumberH = getRandomIntInclusive(0, Height - 30);
+
     for (let i = 0; i < arrW.length; i++) {
         for (let j = 0; j < arrH.length; j++) {
             if (arrW[i] === randomNumberW && arrH[j] === randomNumberH) {
@@ -50,14 +62,17 @@ function getRandomIntExeptCenter(arrW, arrH, width, Height) {
             }
         }
     }
+    if (arrayStatsWidth.includes(randomNumberW) && arrayStatsHeight.includes(randomNumberH)) {
+        return getRandomIntExeptCenter(arrW, arrH, width, Height);
+    }
     return [randomNumberW, randomNumberH];
 }
 
 // функция на создание случайного нового квадрата
-function createRandomSquare() {
+function createRandomSquare(someClass) {
     let randomDiv = document.createElement('div');
     main.append(randomDiv);
-    randomDiv.classList.add('corner', 'newSquad', 'coordinats');
+    randomDiv.classList.add('corner', 'newSquad', 'coordinats', someClass);
     сoordinatsExeptCenter = getRandomIntExeptCenter(arrayCentralWidth, arrayCentralHeight, screenWidth, screenHeight);
     document.querySelector('.coordinats').style.top = `${сoordinatsExeptCenter[1]}px`;
     document.querySelector('.coordinats').style.left = `${сoordinatsExeptCenter[0]}px`;
@@ -66,19 +81,19 @@ function createRandomSquare() {
 
 // изменение центрального числа
 let centralNumber = 50;
-function changeHpNumber() {
-    centralFigue.innerHTML = `<p class= "centralText">${centralNumber++}%</p>`;
-    score.innerHTML++;
+function changeHpNumber(scorePlus = 1) {
+    centralFigue.innerHTML = `<p class= "centralText">${centralNumber += scorePlus}%</p>`;
+    score.innerHTML += scorePlus;
     endGame();
 }
 
 // конец игры
 function endGame() {
-    if (centralNumber == 0) {
+    if (centralNumber <= 0) {
         clearInterval(speedOfGame);
         lose.style.cssText = 'display: flex';
     }
-    if (centralNumber == 100) {
+    if (centralNumber >= 100) {
         clearInterval(speedOfGame);
         win.style.cssText = 'display: flex';
     }
@@ -90,6 +105,8 @@ let currentSquadNumber = 0;
 function checkNumbersOfSquad() {
     if (currentSquadNumber < currentMaxSquad) {
         createRandomSquare();
+        secondLvlSquad();
+        negativeSquad();
         console.log(currentSquadNumber++);
     }
 }
@@ -104,7 +121,7 @@ function decreaseСentralNumber() {
 }
 let speedOfGame = setInterval(decreaseСentralNumber, speed);
 
-// увеличение количества квадратов
+// увеличение количества квадратов и скорости игры
 function nextLevelStageOne() {
     if (centralNumber > 70) {
         currentMaxSquad = 2;
@@ -119,7 +136,24 @@ function nextLevelStageOne() {
         speedOfGame = setInterval(decreaseСentralNumber, speed);
     }
 }
-// setInterval(nextLevelStageOne, 10);
+
+// добавление квадратов 2го уровня
+function secondLvlSquad() {
+    let chanceOfSpawn = getRandomIntInclusive(1, 3);
+    if (chanceOfSpawn == 3) {
+        createRandomSquare('betterSquad');
+    }
+    // можно дописать функцию удаления квадрата через время
+}
+
+// добавлени квадрата на уменьшение счёта
+function negativeSquad() {
+    let chanceOfSpawn = getRandomIntInclusive(1, 3);
+    if (chanceOfSpawn == 3) {
+        createRandomSquare('negativeSquade');
+    }
+    // можно дописать функцию удаления квадрата через время
+}
 
 // Основное событие
 main.addEventListener('click', (event) => {
@@ -132,6 +166,13 @@ main.addEventListener('click', (event) => {
         currentSquadNumber--;
 
         setTimeout (() => {
+            if (target && target.matches('div.betterSquad')) {
+                changeHpNumber(10);
+            } else if (target && target.matches('div.negativeSquade')) {
+                changeHpNumber(-10);
+            } else {
+                changeHpNumber();
+            }
             changeHpNumber();
             target.remove();
         },2500);
@@ -185,44 +226,47 @@ let seconds = document.querySelector('.seconds'),
     minutes = document.querySelector('.minutes'),
     ours = document.querySelector('.ours');
 
-let numberOfSeconds = 0;
+let numberOfSeconds = 0,
+    numberOfMinutes = 0,
+    numberOfOurs = 0;
+
 function increaseSeconds() {
-    if (numberOfSeconds > 2) {
+    numberOfSeconds++;
+    if (numberOfSeconds > 59) {
+        increaseMinutes();
         numberOfSeconds = 0;
     }
     if (numberOfSeconds < 10) {
-        seconds.innerHTML = `0${numberOfSeconds++}`;
-        return;
+        seconds.innerHTML = `0${numberOfSeconds}`;
+    } else {
+        seconds.innerHTML = `${numberOfSeconds}`;
     }
-    seconds.innerHTML = `${numberOfSeconds++}`;
 }
 let secondsTimer = setInterval(increaseSeconds, 1000);
 
-let numberOfMinutes = 0;
 function increaseMinutes() {
+    numberOfMinutes++;
     if (numberOfMinutes > 59) {
         numberOfMinutes = 0;
+        increaseOurs();
     }
     if (numberOfMinutes < 10) {
-        minutes.innerHTML = `0${numberOfMinutes++}`;
-        return;
+        minutes.innerHTML = `0${numberOfMinutes}`;
+    } else {
+        minutes.innerHTML= `${numberOfMinutes}`;
     }
-    minutes.innerHTML= `${numberOfMinutes++}`;
 }
-let minutesTimer = setInterval(increaseMinutes, 2000);
 
-let numberOfOurs = 0;
 function increaseOurs() {
     if (numberOfOurs > 59) {
         numberOfOurs = 0;
     }
     if (numberOfOurs < 10) {
         ours.innerHTML = `0${numberOfOurs++}`;
-        return;
+    } else {
+        ours.innerHTML= `${numberOfOurs++}`;
     }
-    ours.innerHTML= `${numberOfOurs++}`;
 }
-let oursTimer = setInterval(increaseOurs, 1000*60*60);
 
 
 // перезагрузка страницы после окончания игры

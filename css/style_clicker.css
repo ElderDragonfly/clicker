@@ -18,6 +18,13 @@
     border-radius: 50%;
     font-size: 30px;
 }
+/* квадраты */
+.betterSquad {
+    background-color: rgb(68, 99, 156);
+}
+.negativeSquade {
+    background-color: red;
+}
 
 /* движущиеся квадраты */
 .corner {
