@@ -34,6 +34,12 @@
     background: #21ada4;
     animation: expansionSquare 1s linear forwards;
 }
+.betterSquad {
+    background:rgb(42, 33, 95)
+}
+.negativeSquade {
+    background: red;
+}
 
 @keyframes expansionSquare {
     0% {
