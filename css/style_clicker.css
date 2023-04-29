@@ -25,13 +25,15 @@
 .negativeSquade {
     background-color: red;
 }
+.standart {
+    background: #21ada4;
+}
 
 /* движущиеся квадраты */
 .corner {
     width: 30px;
     height: 30px;
     position: absolute;
-    background: #21ada4;
     animation: expansionSquare 1s linear forwards;
 }
 .betterSquad {

@@ -8,7 +8,8 @@ const centralFigue = document.querySelector('#central'),
       main = document.querySelector('.main'),
       score = document.querySelector('.score');
 let newSquad = document.querySelector('.newSquad'),
-    stats = document.querySelector('.stats');
+    stats = document.querySelector('.stats'),
+    hitPoint = document.querySelector('.hitPoint');
 
 // рандомайзер
 function getRandomIntInclusive(min, max) {
@@ -72,18 +73,19 @@ function getRandomIntExeptCenter(arrW, arrH, width, Height) {
 function createRandomSquare(someClass) {
     let randomDiv = document.createElement('div');
     main.append(randomDiv);
-    randomDiv.classList.add('corner', 'newSquad', 'coordinats', someClass);
+    randomDiv.classList.add('corner', 'newSquad', 'coordinats', someClass = 'standart');
     сoordinatsExeptCenter = getRandomIntExeptCenter(arrayCentralWidth, arrayCentralHeight, screenWidth, screenHeight);
     document.querySelector('.coordinats').style.top = `${сoordinatsExeptCenter[1]}px`;
     document.querySelector('.coordinats').style.left = `${сoordinatsExeptCenter[0]}px`;
     randomDiv.classList.remove('coordinats');
 }
 
-// изменение центрального числа
+// изменение центрального числа и счёта
 let centralNumber = 50;
+let gameScore = 0;
 function changeHpNumber(scorePlus = 1) {
-    centralFigue.innerHTML = `<p class= "centralText">${centralNumber += scorePlus}%</p>`;
-    score.innerHTML += scorePlus;
+    hitPoint.innerHTML = `${centralNumber += scorePlus}%`;
+    score.innerHTML = `${gameScore += scorePlus}`;
     endGame();
 }
 
@@ -115,14 +117,14 @@ const squadeCreateTimer = setInterval(checkNumbersOfSquad, 10);
 // скорость игры
 let speed = 3000;
 function decreaseСentralNumber() {
-    centralFigue.innerHTML = `<p class= "centralText">${centralNumber--}%</p>`;
-    nextLevelStageOne();
+    hitPoint.innerHTML = `${centralNumber--}%`;
+    nextLevelStage();
     endGame();
 }
 let speedOfGame = setInterval(decreaseСentralNumber, speed);
 
 // увеличение количества квадратов и скорости игры
-function nextLevelStageOne() {
+function nextLevelStage() {
     if (centralNumber > 70) {
         currentMaxSquad = 2;
         clearInterval(speedOfGame);
@@ -139,8 +141,8 @@ function nextLevelStageOne() {
 
 // добавление квадратов 2го уровня
 function secondLvlSquad() {
-    let chanceOfSpawn = getRandomIntInclusive(1, 3);
-    if (chanceOfSpawn == 3) {
+    let chanceOfSpawn = getRandomIntInclusive(1, 10);
+    if (chanceOfSpawn == 10) {
         createRandomSquare('betterSquad');
     }
     // можно дописать функцию удаления квадрата через время
@@ -148,8 +150,8 @@ function secondLvlSquad() {
 
 // добавлени квадрата на уменьшение счёта
 function negativeSquad() {
-    let chanceOfSpawn = getRandomIntInclusive(1, 3);
-    if (chanceOfSpawn == 3) {
+    let chanceOfSpawn = getRandomIntInclusive(1, 10);
+    if (chanceOfSpawn == 10) {
         createRandomSquare('negativeSquade');
     }
     // можно дописать функцию удаления квадрата через время
@@ -173,7 +175,6 @@ main.addEventListener('click', (event) => {
             } else {
                 changeHpNumber();
             }
-            changeHpNumber();
             target.remove();
         },2500);
     }
