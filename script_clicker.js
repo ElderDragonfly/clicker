@@ -6,6 +6,7 @@ const centralFigue = document.querySelector('#central'),
       win = document.querySelector('.win'),
       gameOver = document.querySelectorAll('.gameover'),
       main = document.querySelector('.main'),
+      gamefield = document.querySelector('.gamefield'),
       score = document.querySelector('.score');
 let newSquad = document.querySelector('.newSquad'),
     stats = document.querySelector('.stats'),
@@ -19,8 +20,18 @@ function getRandomIntInclusive(min, max) {
 }
 
 // координаты случайных точек на экране
-const screenWidth = document.body.clientWidth;
-const screenHeight = document.body.clientHeight;
+const screenWidth = document.body.clientWidth,
+      screenHeight = document.body.clientHeight;
+
+// координаты игрового поля
+const gameBodyWidth = gamefield.offsetWidth,
+      gameBodyHeight = gamefield.offsetHeight;
+
+// начало и конец игрового поля
+const gameBodyLeftBorder = (screenWidth - gameBodyWidth) / 2,
+      gameBodyRightBorder = (screenWidth - gameBodyWidth) / 2 + gameBodyWidth,
+      gameBodyTopBorder = (screenHeight - gameBodyHeight) / 2,
+      gameBodyBottomBorder = (screenHeight - gameBodyHeight) / 2 + gameBodyHeight;
 
 // получение размеров центрального блока
 let centralWidth = centralFigue.offsetWidth;
@@ -52,19 +63,19 @@ for (let i = exceptCentralFigueHightMin; i < exceptCentralFigueHightMax; i++ ) {
 
 // рандомайзер исключающий центр и блок статистики
 let сoordinatsExeptCenter;
-function getRandomIntExeptCenter(arrW, arrH, width, Height) {
-    let randomNumberW = getRandomIntInclusive(0, width - 30);
-    let randomNumberH = getRandomIntInclusive(0, Height - 30);
+function getRandomIntExeptCenter(arrW, arrH, width, Height, gameBoxW = 0, gameBoxH = 0) {
+    let randomNumberW = getRandomIntInclusive(gameBoxW, width - 30);
+    let randomNumberH = getRandomIntInclusive(gameBoxH, Height - 30);
 
     for (let i = 0; i < arrW.length; i++) {
         for (let j = 0; j < arrH.length; j++) {
             if (arrW[i] === randomNumberW && arrH[j] === randomNumberH) {
-                return getRandomIntExeptCenter(arrW, arrH, width, Height);
+                return getRandomIntExeptCenter(arrW, arrH, width, Height, gameBoxW = 0, gameBoxH = 0);
             }
         }
     }
     if (arrayStatsWidth.includes(randomNumberW) && arrayStatsHeight.includes(randomNumberH)) {
-        return getRandomIntExeptCenter(arrW, arrH, width, Height);
+        return getRandomIntExeptCenter(arrW, arrH, width, Height, gameBoxW = 0, gameBoxH = 0);
     }
     return [randomNumberW, randomNumberH];
 }
@@ -73,10 +84,10 @@ function getRandomIntExeptCenter(arrW, arrH, width, Height) {
 function createRandomSquare(someClass) {
     let randomDiv = document.createElement('div');
     main.append(randomDiv);
-    randomDiv.classList.add('corner', 'newSquad', 'coordinats', someClass = 'standart');
-    сoordinatsExeptCenter = getRandomIntExeptCenter(arrayCentralWidth, arrayCentralHeight, screenWidth, screenHeight);
-    document.querySelector('.coordinats').style.top = `${сoordinatsExeptCenter[1]}px`;
+    randomDiv.classList.add('corner', 'newSquad', 'coordinats', someClass);
+    сoordinatsExeptCenter = getRandomIntExeptCenter(arrayCentralWidth, arrayCentralHeight, gameBodyRightBorder, gameBodyBottomBorder, gameBodyLeftBorder, gameBodyTopBorder);
     document.querySelector('.coordinats').style.left = `${сoordinatsExeptCenter[0]}px`;
+    document.querySelector('.coordinats').style.top = `${сoordinatsExeptCenter[1]}px`;
     randomDiv.classList.remove('coordinats');
 }
 
@@ -106,13 +117,13 @@ let currentMaxSquad = 1;
 let currentSquadNumber = 0;
 function checkNumbersOfSquad() {
     if (currentSquadNumber < currentMaxSquad) {
-        createRandomSquare();
+        createRandomSquare('standart');
         secondLvlSquad();
         negativeSquad();
-        console.log(currentSquadNumber++);
+        currentSquadNumber++;
     }
 }
-const squadeCreateTimer = setInterval(checkNumbersOfSquad, 10);
+// const squadeCreateTimer = setInterval(checkNumbersOfSquad, 10);
 
 // скорость игры
 let speed = 3000;
@@ -140,25 +151,46 @@ function nextLevelStage() {
 }
 
 // добавление квадратов 2го уровня
+let StopDeleteAdvancedSquad;
 function secondLvlSquad() {
-    let chanceOfSpawn = getRandomIntInclusive(1, 10);
-    if (chanceOfSpawn == 10) {
+    let chanceOfSpawn = getRandomIntInclusive(1, 3);
+    if (chanceOfSpawn == 1) {
         createRandomSquare('betterSquad');
+        StopDeleteAdvancedSquad = setTimeout(deleteAdvancedSquad, lifeTime);
     }
-    // можно дописать функцию удаления квадрата через время
 }
 
 // добавлени квадрата на уменьшение счёта
+let StopDeleteNegativeSquade;
 function negativeSquad() {
-    let chanceOfSpawn = getRandomIntInclusive(1, 10);
-    if (chanceOfSpawn == 10) {
+    let chanceOfSpawn = getRandomIntInclusive(1, 3);
+    if (chanceOfSpawn == 1) {
         createRandomSquare('negativeSquade');
+        StopDeleteNegativeSquade = setTimeout(deleteNegativeSquade, lifeTime);
     }
-    // можно дописать функцию удаления квадрата через время
+}
+
+// удаление квадратов 2го уровня и квадратов на уменьшение счёта
+
+const lifeTime = 3000;
+function deleteAdvancedSquad() {
+    document.querySelector('.betterSquad').remove();
+}
+// let StopDeleteAdvancedSquad;
+
+function deleteNegativeSquade() {
+    document.querySelector('.negativeSquade').remove();
 }
 
 // Основное событие
+checkNumbersOfSquad();
 main.addEventListener('click', (event) => {
+
+    // document.querySelector('.betterSquad')
+
+    // let StopDeleteAdvancedSquad = setTimeout(deleteAdvancedSquad, lifeTime),
+    //     StopDeleteNegativeSquade = setTimeout(deleteNegativeSquade, lifeTime);
+
     let target = event.target;
 
     if (target && target.matches('div.newSquad')) {
@@ -177,7 +209,19 @@ main.addEventListener('click', (event) => {
             }
             target.remove();
         },2500);
+
     }
+
+    checkNumbersOfSquad();
+
+    if (target && target.matches('div.betterSquad')) {
+        clearInterval(StopDeleteAdvancedSquad);
+    }
+
+    if (document.querySelector('.negativeSquade')) {
+        clearInterval(StopDeleteNegativeSquade);
+    }
+
 });
 
 // переключение в блоке статистики

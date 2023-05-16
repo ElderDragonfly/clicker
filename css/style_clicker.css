@@ -8,6 +8,15 @@
     position: relative;
 }
 
+.gamefield {
+    width: 700px;
+    height: 500px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #000;
+}
+
 .central {
     display: flex;
     justify-content: center;
@@ -19,14 +28,14 @@
     font-size: 30px;
 }
 /* квадраты */
+.standart {
+    background: #21ada4;
+}
 .betterSquad {
     background-color: rgb(68, 99, 156);
 }
 .negativeSquade {
     background-color: red;
-}
-.standart {
-    background: #21ada4;
 }
 
 /* движущиеся квадраты */
