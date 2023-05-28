@@ -23,15 +23,21 @@ function getRandomIntInclusive(min, max) {
 const screenWidth = document.body.clientWidth,
       screenHeight = document.body.clientHeight;
 
+console.log(screenWidth,screenHeight);
+
 // координаты игрового поля
 const gameBodyWidth = gamefield.offsetWidth,
       gameBodyHeight = gamefield.offsetHeight;
 
+console.log(gameBodyWidth,gameBodyHeight);
+
 // начало и конец игрового поля
-const gameBodyLeftBorder = (screenWidth - gameBodyWidth) / 2,
-      gameBodyRightBorder = (screenWidth - gameBodyWidth) / 2 + gameBodyWidth,
-      gameBodyTopBorder = (screenHeight - gameBodyHeight) / 2,
-      gameBodyBottomBorder = (screenHeight - gameBodyHeight) / 2 + gameBodyHeight;
+const gameBodyLeftBorder = Math.round((screenWidth - gameBodyWidth) / 2),
+      gameBodyRightBorder = Math.round((screenWidth - gameBodyWidth) / 2 + gameBodyWidth),
+      gameBodyTopBorder = Math.round((screenHeight - gameBodyHeight) / 2),
+      gameBodyBottomBorder = Math.round((screenHeight - gameBodyHeight) / 2 + gameBodyHeight);
+
+console.log(gameBodyLeftBorder,gameBodyRightBorder,gameBodyTopBorder,gameBodyBottomBorder);
 
 // получение размеров центрального блока
 let centralWidth = centralFigue.offsetWidth;
@@ -40,16 +46,6 @@ let exceptCentralFigueWidthMin =  screenWidth / 2  - centralWidth / 2 - 15;
 let exceptCentralFigueWidthMax =  screenWidth / 2  + centralWidth / 2 + 15;
 let exceptCentralFigueHightMin =  screenHeight / 2  - centralHeight / 2 - 15;
 let exceptCentralFigueHightMax =  screenHeight / 2  + centralHeight / 2 + 15;
-
-// массив с координатами блока статистики
-let arrayStatsWidth = [];
-for (let i = stats.getBoundingClientRect().x - 15; i < stats.getBoundingClientRect().x + stats.getBoundingClientRect().width + 15; i++) {
-    arrayStatsWidth.push(Math.round(i));
-}
-let arrayStatsHeight = [];
-for (let i = stats.getBoundingClientRect().y - 15; i < stats.getBoundingClientRect().y + stats.getBoundingClientRect().height + 15; i++) {
-    arrayStatsHeight.push(Math.round(i));
-}
 
 // создание массива с числами-координатами центра
 let arrayCentralWidth = [];
@@ -61,22 +57,53 @@ for (let i = exceptCentralFigueHightMin; i < exceptCentralFigueHightMax; i++ ) {
     arrayCentralHeight.push(Math.round(i));
 }
 
-// рандомайзер исключающий центр и блок статистики
-let сoordinatsExeptCenter;
-function getRandomIntExeptCenter(arrW, arrH, width, Height, gameBoxW = 0, gameBoxH = 0) {
-    let randomNumberW = getRandomIntInclusive(gameBoxW, width - 30);
-    let randomNumberH = getRandomIntInclusive(gameBoxH, Height - 30);
+// массив с координатами блока статистики
+// let arrayStatsWidth = [];
+// for (let i = stats.getBoundingClientRect().x - 15; i < stats.getBoundingClientRect().x + stats.getBoundingClientRect().width + 15; i++) {
+//     arrayStatsWidth.push(Math.round(i));
+// }
+// let arrayStatsHeight = [];
+// for (let i = stats.getBoundingClientRect().y - 15; i < stats.getBoundingClientRect().y + stats.getBoundingClientRect().height + 15; i++) {
+//     arrayStatsHeight.push(Math.round(i));
+// }
 
-    for (let i = 0; i < arrW.length; i++) {
-        for (let j = 0; j < arrH.length; j++) {
-            if (arrW[i] === randomNumberW && arrH[j] === randomNumberH) {
-                return getRandomIntExeptCenter(arrW, arrH, width, Height, gameBoxW = 0, gameBoxH = 0);
+// рандомайзер исключающий центр и блок статистики
+// let сoordinatsExeptCenter;
+// function getRandomIntExeptCenter(arrW, arrH, width, Height, gameBoxW = 0, gameBoxH = 0) {
+//     let randomNumberW = getRandomIntInclusive(gameBoxW, width - 30);
+//     let randomNumberH = getRandomIntInclusive(gameBoxH, Height - 30);
+
+//     for (let i = 0; i < arrW.length; i++) {
+//         for (let j = 0; j < arrH.length; j++) {
+//             if (arrW[i] === randomNumberW && arrH[j] === randomNumberH) {
+//                 return getRandomIntExeptCenter(arrW, arrH, width, Height, gameBoxW = 0, gameBoxH = 0);
+//             }
+//         }
+//     }
+//     if (arrayStatsWidth.includes(randomNumberW) && arrayStatsHeight.includes(randomNumberH)) {
+//         return getRandomIntExeptCenter(arrW, arrH, width, Height, gameBoxW = 0, gameBoxH = 0);
+//     }
+//     return [randomNumberW, randomNumberH];
+// }
+
+// рандомайзер исключающий центр
+let сoordinatsExeptCenter;
+function getRandomIntExeptCenter(arrW, arrH, leftBorder, rightBorder, topBorder, bottomBorder) {
+    let randomNumberW = getRandomIntInclusive(leftBorder,rightBorder - 30);
+    let randomNumberH = getRandomIntInclusive(topBorder, bottomBorder - 30);
+
+        for (let i = 0; i < arrW.length; i++) {
+            for (let j = 0; j < arrH.length; j++) {
+                if (arrW[i] === randomNumberW && arrH[j] === randomNumberH) {
+                    return getRandomIntExeptCenter(arrW, arrH, leftBorder, rightBorder, topBorder, bottomBorder);
+                }
             }
         }
-    }
-    if (arrayStatsWidth.includes(randomNumberW) && arrayStatsHeight.includes(randomNumberH)) {
-        return getRandomIntExeptCenter(arrW, arrH, width, Height, gameBoxW = 0, gameBoxH = 0);
-    }
+
+        if (randomNumberW < leftBorder && randomNumberW > rightBorder && randomNumberH < topBorder && randomNumberH > bottomBorder) {
+            return getRandomIntExeptCenter(arrW, arrH, leftBorder, rightBorder, topBorder, bottomBorder);
+        }
+
     return [randomNumberW, randomNumberH];
 }
 
@@ -85,7 +112,7 @@ function createRandomSquare(someClass) {
     let randomDiv = document.createElement('div');
     main.append(randomDiv);
     randomDiv.classList.add('corner', 'newSquad', 'coordinats', someClass);
-    сoordinatsExeptCenter = getRandomIntExeptCenter(arrayCentralWidth, arrayCentralHeight, gameBodyRightBorder, gameBodyBottomBorder, gameBodyLeftBorder, gameBodyTopBorder);
+    сoordinatsExeptCenter = getRandomIntExeptCenter(arrayCentralWidth, arrayCentralHeight, gameBodyLeftBorder, gameBodyRightBorder, gameBodyTopBorder, gameBodyBottomBorder);
     document.querySelector('.coordinats').style.left = `${сoordinatsExeptCenter[0]}px`;
     document.querySelector('.coordinats').style.top = `${сoordinatsExeptCenter[1]}px`;
     randomDiv.classList.remove('coordinats');
@@ -118,8 +145,8 @@ let currentSquadNumber = 0;
 function checkNumbersOfSquad() {
     if (currentSquadNumber < currentMaxSquad) {
         createRandomSquare('standart');
-        secondLvlSquad();
-        negativeSquad();
+        // secondLvlSquad();
+        // negativeSquad();
         currentSquadNumber++;
     }
 }
@@ -136,11 +163,12 @@ let speedOfGame = setInterval(decreaseСentralNumber, speed);
 
 // увеличение количества квадратов и скорости игры
 function nextLevelStage() {
-    if (centralNumber > 70) {
+    if (centralNumber > 55) {
         currentMaxSquad = 2;
         clearInterval(speedOfGame);
         speed = 2000;
         speedOfGame = setInterval(decreaseСentralNumber, speed);
+        return currentMaxSquad;
     }
     if (centralNumber > 85) {
         currentMaxSquad = 3;
@@ -148,6 +176,7 @@ function nextLevelStage() {
         speed = 1000;
         speedOfGame = setInterval(decreaseСentralNumber, speed);
     }
+    console.log(currentMaxSquad);
 }
 
 // добавление квадратов 2го уровня
@@ -176,7 +205,6 @@ const lifeTime = 3000;
 function deleteAdvancedSquad() {
     document.querySelector('.betterSquad').remove();
 }
-// let StopDeleteAdvancedSquad;
 
 function deleteNegativeSquade() {
     document.querySelector('.negativeSquade').remove();
@@ -186,11 +214,6 @@ function deleteNegativeSquade() {
 checkNumbersOfSquad();
 main.addEventListener('click', (event) => {
 
-    // document.querySelector('.betterSquad')
-
-    // let StopDeleteAdvancedSquad = setTimeout(deleteAdvancedSquad, lifeTime),
-    //     StopDeleteNegativeSquade = setTimeout(deleteNegativeSquade, lifeTime);
-
     let target = event.target;
 
     if (target && target.matches('div.newSquad')) {
@@ -198,6 +221,8 @@ main.addEventListener('click', (event) => {
         target.classList.remove('newSquad');
 
         currentSquadNumber--;
+
+        // исчезновение летящего к центру квадрата
 
         setTimeout (() => {
             if (target && target.matches('div.betterSquad')) {
@@ -213,12 +238,16 @@ main.addEventListener('click', (event) => {
     }
 
     checkNumbersOfSquad();
+    secondLvlSquad();
+    negativeSquad();
+
+    // остановка времени для исчезания цветного квадрата, по которому кликнули
 
     if (target && target.matches('div.betterSquad')) {
         clearInterval(StopDeleteAdvancedSquad);
     }
 
-    if (document.querySelector('.negativeSquade')) {
+    if (target && target.matches('div.negativeSquade')) {
         clearInterval(StopDeleteNegativeSquade);
     }
 
